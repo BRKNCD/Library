@@ -58,15 +58,28 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical">
+            android:layout_weight="2">
+
+            <Button
+                android:id="@+id/button_up"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_up_text"/>
 
             <EditText
                 android:id="@+id/book_quantity"
-                android:layout_width="wrap_content"
+                android:layout_weight="2"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal">
-            </EditText>
+                android:inputType="numberDecimal"/>
+
+            <Button
+                android:id="@+id/button_down"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_down_text"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -109,4 +122,12 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button_order"
+        android:text="@string/order_book"
+        android:layout_marginTop="58dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 </LinearLayout>

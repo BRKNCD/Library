@@ -165,6 +165,8 @@ public class BookProvider extends ContentProvider {
 
             case BOOK_ID:
                 // Delete a single row given by the ID in the URI
+                selection = BookEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
                 break;
 

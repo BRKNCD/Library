@@ -1,15 +1,19 @@
 package com.example.android.library;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,6 +36,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     EditText mQuantity;
     EditText mSupplierNameEditText;
     EditText mSupplierPhoneEditText;
+
+    Button upButton;
+    Button downButton;
+
+    Button orderButton;
+
+    private static final int REQUEST_CALL_PHONE = 1;
 
     /**
      * Identifier for the book data loader
@@ -81,6 +93,35 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantity.setOnTouchListener(mTouchListener);
         mSupplierNameEditText.setOnTouchListener(mTouchListener);
         mSupplierPhoneEditText.setOnTouchListener(mTouchListener);
+
+        upButton = findViewById(R.id.button_up);
+        downButton = findViewById(R.id.button_down);
+
+        orderButton = findViewById(R.id.button_order);
+
+        upButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantityString = mQuantity.getText().toString().trim();
+                int quantity = Integer.parseInt(quantityString);
+                adjustProductQuantity(mCurrentBookUri, quantity, upButton);
+            }
+        });
+        downButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantityString = mQuantity.getText().toString().trim();
+                int quantity = Integer.parseInt(quantityString);
+                adjustProductQuantity(mCurrentBookUri, quantity, downButton);
+            }
+        });
+
+        orderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePhoneCall();
+            }
+        });
 
         getSupportLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
     }
@@ -137,7 +178,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentBookUri will already identify the correct row in the database that
             // we want to modify.
-
             rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
         }
 
@@ -379,5 +419,45 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    private void adjustProductQuantity(Uri productUri, int currentQuantityInStock, View v) {
+        if (v.getId() == R.id.button_up) {
+            int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock + 1 : 0;
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(BookEntry.COLUMN_QUANTITY, newQuantityValue);
+            int numRowsUpdated = getContentResolver().update(productUri, contentValues, null, null);
+            if (numRowsUpdated > 0) {
+                Toast.makeText(getApplicationContext(), R.string.up_quantity, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.no_product_in_stock, Toast.LENGTH_SHORT).show();
+
+            }
+        } else if (v.getId() == R.id.button_down) {
+            int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock - 1 : 0;
+
+            if (currentQuantityInStock == 0) {
+                Toast.makeText(getApplicationContext(), R.string.toast_out_of_stock_msg, Toast.LENGTH_SHORT).show();
+            }
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(BookEntry.COLUMN_QUANTITY, newQuantityValue);
+            int numRowsUpdated = getContentResolver().update(productUri, contentValues, null, null);
+            if (numRowsUpdated > 0) {
+                Toast.makeText(getApplicationContext(), R.string.down_quantity, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.no_product_in_stock, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void makePhoneCall() {
+        String phoneNumber = mSupplierPhoneEditText.getText().toString().trim();
+
+            if (ContextCompat.checkSelfPermission(EditorActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(EditorActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
+            } else {
+                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber)));
+            }
     }
 }

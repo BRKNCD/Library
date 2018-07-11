@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
                 Uri currentBookUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
                 intent.setData(currentBookUri);
@@ -95,10 +95,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                deleteAllPets();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAllPets() {
+        int rowsDeleted = getContentResolver().delete(BookEntry.CONTENT_URI, null, null);
+        Log.v("MainActivity", rowsDeleted + " rows deleted from pet database");
     }
 
     @Override

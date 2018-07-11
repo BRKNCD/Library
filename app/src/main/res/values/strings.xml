@@ -35,5 +35,12 @@
 
     <!-- Toast message in editor when current pet has failed to be deleted [CHAR LIMIT=NONE] -->
     <string name="editor_delete_book_failed">Error with deleting book</string>
+    <string name="down_quantity">Quantity -1</string>
+    <string name="up_quantity">Quantity +1</string>
+    <string name="button_up_text">+</string>
+    <string name="button_down_text">-</string>
+    <string name="no_product_in_stock">No product in stock</string>
+    <string name="toast_out_of_stock_msg">Product out of stock</string>
+    <string name="order_book">Order this book from supplier</string>
 
 </resources>
