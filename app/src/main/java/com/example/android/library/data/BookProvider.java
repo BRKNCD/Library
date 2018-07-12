@@ -259,7 +259,7 @@ public class BookProvider extends ContentProvider {
             return 0;
         }
 
-        // Get writeable database
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected

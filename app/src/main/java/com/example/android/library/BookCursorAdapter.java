@@ -27,11 +27,14 @@ public class BookCursorAdapter extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         TextView nameTextView = view.findViewById(R.id.name_text_view);
         TextView priceTextView = view.findViewById(R.id.price_text_view);
+        TextView quantityTextView = view.findViewById(R.id.quantity_text_view);
 
         String name = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_NAME));
         String price = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
+        String quantity = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
 
         nameTextView.setText(name);
         priceTextView.setText(price);
+        quantityTextView.setText(quantity);
     }
 }

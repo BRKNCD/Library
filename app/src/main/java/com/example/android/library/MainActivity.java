@@ -71,15 +71,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(BookEntry.COLUMN_PHONE_NUMBER, "101010");
 
         // Insert a new row for HG2G into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
-        // Receive the new content URI that will allow us to access Toto's data in the future.
+        // Use the {@link BookEntry#CONTENT_URI} to indicate that we want to insert
+        // into the books database table.
+        // Receive the new content URI that will allow us to access HG2G's data in the future.
         Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, values);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_catalog.xml file.
+        // Inflate the menu options from the res/menu/menu_main.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;

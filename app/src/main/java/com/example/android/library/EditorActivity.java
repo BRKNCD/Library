@@ -42,6 +42,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     Button orderButton;
 
+    // local changes in quantity (before save)
+    private int quantity = 0;
+
     private static final int REQUEST_CALL_PHONE = 1;
 
     /**
@@ -75,18 +78,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mCurrentBookUri = intent.getData();
 
-        if (mCurrentBookUri == null) {
-            setTitle(R.string.editor_activity_title_new_book);
-        } else {
-            setTitle(R.string.editor_activity_title_edit_book);
-        }
-
         // Find all relevant views that we will need to read user input from
         mNameEditText = findViewById(R.id.edit_book_name);
         mPriceEditText = findViewById(R.id.edit_price);
         mQuantity = findViewById(R.id.book_quantity);
         mSupplierNameEditText = findViewById(R.id.edit_supplier_name);
         mSupplierPhoneEditText = findViewById(R.id.edit_phone_number);
+
+        if (mCurrentBookUri == null) {
+            setTitle(R.string.editor_activity_title_new_book);
+            orderButton.setVisibility(View.GONE);
+            quantity = 0;
+            mQuantity.setText(String.valueOf(quantity));
+        } else {
+            setTitle(R.string.editor_activity_title_edit_book);
+            getLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
+        }
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
@@ -102,17 +109,19 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String quantityString = mQuantity.getText().toString().trim();
-                int quantity = Integer.parseInt(quantityString);
-                adjustProductQuantity(mCurrentBookUri, quantity, upButton);
+                quantity += 1;
+                mQuantity.setText(String.valueOf(quantity));
             }
         });
         downButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String quantityString = mQuantity.getText().toString().trim();
-                int quantity = Integer.parseInt(quantityString);
-                adjustProductQuantity(mCurrentBookUri, quantity, downButton);
+                if (quantity == 0) {
+                    Toast.makeText(EditorActivity.this, R.string.illegal_quantity_toast, Toast.LENGTH_SHORT).show();
+                } else {
+                    quantity -= 1;
+                    mQuantity.setText(String.valueOf(quantity));
+                }
             }
         });
 
@@ -122,8 +131,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 makePhoneCall();
             }
         });
-
-        getSupportLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
     }
 
     /**
@@ -161,11 +168,18 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         values.put(BookEntry.COLUMN_PRICE, price);
 
-        // Check if the quantity is inserted else default is 1
-        int quantity = 1;
+
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
+        }else{
+            /* If the default value is canceled and then the book is saved with no quantity
+            *  value of quantity is restored to default 1
+            * */
+            quantity = 1;
+            Toast.makeText(EditorActivity.this, R.string.no_quantity_toast, Toast.LENGTH_SHORT).show();
+
         }
+
         values.put(BookEntry.COLUMN_QUANTITY, quantity);
 
         int rowsAffected = 0;
@@ -212,7 +226,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the book.
-                deletePet();
+                deleteBook();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -233,7 +247,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Perform the deletion of the book in the database.
      */
-    private void deletePet() {
+    private void deleteBook() {
 
         int rowsDeleted = 0;
 
@@ -362,6 +376,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String quantity = cursor.getString(quantityColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
             String supplierPhone = cursor.getString(supplierPhoneColumnIndex);
+
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(price);
@@ -421,43 +436,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         alertDialog.show();
     }
 
-    private void adjustProductQuantity(Uri productUri, int currentQuantityInStock, View v) {
-        if (v.getId() == R.id.button_up) {
-            int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock + 1 : 0;
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(BookEntry.COLUMN_QUANTITY, newQuantityValue);
-            int numRowsUpdated = getContentResolver().update(productUri, contentValues, null, null);
-            if (numRowsUpdated > 0) {
-                Toast.makeText(getApplicationContext(), R.string.up_quantity, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.no_product_in_stock, Toast.LENGTH_SHORT).show();
-
-            }
-        } else if (v.getId() == R.id.button_down) {
-            int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock - 1 : 0;
-
-            if (currentQuantityInStock == 0) {
-                Toast.makeText(getApplicationContext(), R.string.toast_out_of_stock_msg, Toast.LENGTH_SHORT).show();
-            }
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(BookEntry.COLUMN_QUANTITY, newQuantityValue);
-            int numRowsUpdated = getContentResolver().update(productUri, contentValues, null, null);
-            if (numRowsUpdated > 0) {
-                Toast.makeText(getApplicationContext(), R.string.down_quantity, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.no_product_in_stock, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private void makePhoneCall() {
         String phoneNumber = mSupplierPhoneEditText.getText().toString().trim();
 
-            if (ContextCompat.checkSelfPermission(EditorActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(EditorActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
-            } else {
-                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber)));
-            }
+        if (ContextCompat.checkSelfPermission(EditorActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(EditorActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
+        } else {
+            startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber)));
+        }
     }
 }

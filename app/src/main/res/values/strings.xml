@@ -42,5 +42,8 @@
     <string name="no_product_in_stock">No product in stock</string>
     <string name="toast_out_of_stock_msg">Product out of stock</string>
     <string name="order_book">Order this book from supplier</string>
+    <string name="default_quantity">0</string>
+    <string name="illegal_quantity_toast">Quantity can\'t be negative!</string>
+    <string name="no_quantity_toast">No quantity inserted. Set to default (1)</string>
 
 </resources>
