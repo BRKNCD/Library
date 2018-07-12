@@ -155,9 +155,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
          * I don't ce either for the supplierNameString or supplierPhoneString because
          * makes no sense to have a book
          */
-        if (mCurrentBookUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(supplierNameString)
-                && TextUtils.isEmpty(supplierPhoneString)) {
+        if (mCurrentBookUri == null ||
+                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(supplierNameString)
+                || TextUtils.isEmpty(supplierPhoneString)) {
             Toast.makeText(EditorActivity.this, R.string.enter_all_field, Toast.LENGTH_LONG).show();
             return;
         }

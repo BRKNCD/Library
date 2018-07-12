@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal"
     android:padding="16dp">
 
     <LinearLayout
-        android:layout_weight="2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
@@ -38,10 +39,12 @@
 
     <Button
         android:id="@+id/buy_button"
-        android:layout_weight="1"
-        android:text="@string/buy_book"
-        android:layout_gravity="center"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/buy_book" />
 
 </LinearLayout>
