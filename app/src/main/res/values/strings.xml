@@ -45,5 +45,6 @@
     <string name="default_quantity">0</string>
     <string name="illegal_quantity_toast">Quantity can\'t be negative!</string>
     <string name="no_quantity_toast">No quantity inserted. Set to default (1)</string>
+    <string name="enter_all_field">Please, fill al the field required</string>
 
 </resources>

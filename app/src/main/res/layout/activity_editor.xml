@@ -61,27 +61,26 @@
             android:layout_weight="2">
 
             <Button
-                android:id="@+id/button_up"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/button_up_text"/>
-
-            <EditText
-                android:id="@+id/book_quantity"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:textAlignment="center"
-                android:text="@string/default_quantity"
-                android:layout_height="match_parent"
-                android:inputType="numberDecimal"/>
-
-            <Button
                 android:id="@+id/button_down"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/button_down_text"/>
+
+            <TextView
+                android:id="@+id/book_quantity"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:text="@string/default_quantity"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/button_up"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_up_text"/>
 
         </LinearLayout>
     </LinearLayout>

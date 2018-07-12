@@ -23,7 +23,7 @@ public class BooksDbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + BookEntry.TABLE_NAME +
                         " (" + BookEntry._ID + " INTEGER PRIMARY KEY," +
                         BookEntry.COLUMN_PRODUCT_NAME + " TEXT," +
-                        BookEntry.COLUMN_PRICE + " INTEGER," +
+                        BookEntry.COLUMN_PRICE + " FLOAT," +
                         BookEntry.COLUMN_QUANTITY + " INTEGER," +
                         BookEntry.COLUMN_SUPPLIER_NAME + " TEXT," +
                         BookEntry.COLUMN_PHONE_NUMBER + " TEXT)";

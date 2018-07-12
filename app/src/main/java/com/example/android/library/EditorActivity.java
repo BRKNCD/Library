@@ -26,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import static com.example.android.library.data.BookContract.BookEntry;
@@ -34,7 +35,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     EditText mNameEditText;
     EditText mPriceEditText;
-    EditText mQuantity;
+    TextView mQuantity;
     EditText mSupplierNameEditText;
     EditText mSupplierPhoneEditText;
 
@@ -43,7 +44,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     Button orderButton;
 
-    // local changes in quantity (before save)
+    // local changes in quantity
     private int quantity = 0;
 
     private static final int REQUEST_CALL_PHONE = 1;
@@ -54,7 +55,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private static final int EXISTING_BOOK_LOADER = 0;
 
     /**
-     * Content URI for the existing book (null if it's a new pet)
+     * Content URI for the existing book (null if it's a new book)
      */
     private Uri mCurrentBookUri;
 
@@ -106,7 +107,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
-        mQuantity.setOnTouchListener(mTouchListener);
         mSupplierNameEditText.setOnTouchListener(mTouchListener);
         mSupplierPhoneEditText.setOnTouchListener(mTouchListener);
 
@@ -120,6 +120,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         downButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                quantity = Integer.parseInt(mQuantity.getText().toString());
                 if (quantity == 0) {
                     Toast.makeText(EditorActivity.this, R.string.illegal_quantity_toast, Toast.LENGTH_SHORT).show();
                 } else {
@@ -149,10 +150,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String supplierNameString = mSupplierNameEditText.getText().toString().trim();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString().trim();
 
-        if (mCurrentBookUri == null ||
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierNameString)
+        /**
+         * Here I don't check for price or quantity to be empty, because they can't be
+         * I don't ce either for the supplierNameString or supplierPhoneString because
+         * makes no sense to have a book
+         */
+        if (mCurrentBookUri == null &&
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(supplierNameString)
                 && TextUtils.isEmpty(supplierPhoneString)) {
+            Toast.makeText(EditorActivity.this, R.string.enter_all_field, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -168,17 +174,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Check if the price is inserted else default is 9.99
         float price = 9.9f;
         if (!TextUtils.isEmpty(priceString)) {
-            price = Integer.parseInt(priceString);
+            price = Float.parseFloat(priceString);
         }
         values.put(BookEntry.COLUMN_PRICE, price);
 
-
-        if (!TextUtils.isEmpty(quantityString)) {
+        if (Integer.parseInt(quantityString) != 0) {
             quantity = Integer.parseInt(quantityString);
-        }else{
-            /* If the default value is canceled and then the book is saved with no quantity
-            *  value of quantity is restored to default 1
-            * */
+        } else {
+            /**
+             * If the default value is canceled and then the book is saved with no quantity
+             * value of quantity is restored to default 1
+             * */
             quantity = 1;
             Toast.makeText(EditorActivity.this, R.string.no_quantity_toast, Toast.LENGTH_LONG).show();
         }
