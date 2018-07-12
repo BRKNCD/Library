@@ -114,7 +114,7 @@ public class BookProvider extends ContentProvider {
 
         String name = values.getAsString(BookEntry.COLUMN_PRODUCT_NAME);
         String price = values.getAsString(BookEntry.COLUMN_PRICE);
-        int quantity = values.getAsInteger(BookEntry.COLUMN_PRICE);
+        int quantity = values.getAsInteger(BookEntry.COLUMN_QUANTITY);
         String supplier = values.getAsString(BookEntry.COLUMN_SUPPLIER_NAME);
         String supplierPhone = values.getAsString(BookEntry.COLUMN_PHONE_NUMBER);
 

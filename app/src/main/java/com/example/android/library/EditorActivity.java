@@ -1,6 +1,7 @@
 package com.example.android.library;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -63,6 +64,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     // the view, and we change the mBookHasChanged boolean to true.
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mBookHasChanged = true;
@@ -70,6 +72,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     };
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +88,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mSupplierNameEditText = findViewById(R.id.edit_supplier_name);
         mSupplierPhoneEditText = findViewById(R.id.edit_phone_number);
 
+        upButton = findViewById(R.id.button_up);
+        downButton = findViewById(R.id.button_down);
+
+        orderButton = findViewById(R.id.button_order);
+
         if (mCurrentBookUri == null) {
             setTitle(R.string.editor_activity_title_new_book);
             orderButton.setVisibility(View.GONE);
@@ -92,7 +100,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mQuantity.setText(String.valueOf(quantity));
         } else {
             setTitle(R.string.editor_activity_title_edit_book);
-            getLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
+            orderButton.setVisibility(View.VISIBLE);
+            getSupportLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
         }
 
         mNameEditText.setOnTouchListener(mTouchListener);
@@ -100,11 +109,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantity.setOnTouchListener(mTouchListener);
         mSupplierNameEditText.setOnTouchListener(mTouchListener);
         mSupplierPhoneEditText.setOnTouchListener(mTouchListener);
-
-        upButton = findViewById(R.id.button_up);
-        downButton = findViewById(R.id.button_down);
-
-        orderButton = findViewById(R.id.button_order);
 
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +149,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String supplierNameString = mSupplierNameEditText.getText().toString().trim();
         String supplierPhoneString = mSupplierPhoneEditText.getText().toString().trim();
 
+        if (mCurrentBookUri == null ||
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierNameString)
+                && TextUtils.isEmpty(supplierPhoneString)) {
+            return;
+        }
+
         // Create a ContentValues object where column names are the keys,
         // and book attributes from the editor are the values.
         ContentValues values = new ContentValues();
@@ -153,13 +164,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(BookEntry.COLUMN_QUANTITY, quantityString);
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
         values.put(BookEntry.COLUMN_PHONE_NUMBER, supplierPhoneString);
-
-        if (mCurrentBookUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierNameString)
-                && TextUtils.isEmpty(supplierPhoneString)) {
-            return;
-        }
 
         // Check if the price is inserted else default is 9.99
         float price = 9.9f;
@@ -176,8 +180,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             *  value of quantity is restored to default 1
             * */
             quantity = 1;
-            Toast.makeText(EditorActivity.this, R.string.no_quantity_toast, Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(EditorActivity.this, R.string.no_quantity_toast, Toast.LENGTH_LONG).show();
         }
 
         values.put(BookEntry.COLUMN_QUANTITY, quantity);

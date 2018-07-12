@@ -25,6 +25,7 @@ public class BookCursorAdapter extends CursorAdapter{
     // this will bind all the Layout's View
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+
         TextView nameTextView = view.findViewById(R.id.name_text_view);
         TextView priceTextView = view.findViewById(R.id.price_text_view);
         TextView quantityTextView = view.findViewById(R.id.quantity_text_view);
