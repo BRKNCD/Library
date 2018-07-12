@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // Setup FAB to open EditorActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         View emptyView = findViewById(R.id.empty_view);
         listView.setEmptyView(emptyView);
 
+        mBookCursorAdapter = new BookCursorAdapter(this, null);
+        listView.setAdapter(mBookCursorAdapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -54,9 +56,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
-
-        mBookCursorAdapter = new BookCursorAdapter(this, null);
-        listView.setAdapter(mBookCursorAdapter);
 
         getLoaderManager().initLoader(BOOK_LOADER, null, this);
 
