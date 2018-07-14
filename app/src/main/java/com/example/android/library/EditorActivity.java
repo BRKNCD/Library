@@ -1,20 +1,16 @@
 package com.example.android.library;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -155,9 +151,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
          * I don't ce either for the supplierNameString or supplierPhoneString because
          * makes no sense to have a book
          */
-        if (mCurrentBookUri == null ||
-                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(supplierNameString)
-                || TextUtils.isEmpty(supplierPhoneString)) {
+        if (mCurrentBookUri == null &&
+                nameString.trim().length() == 0 || supplierNameString.trim().length() == 0 ||
+                supplierPhoneString.trim().length() == 0) {
             Toast.makeText(EditorActivity.this, R.string.enter_all_field, Toast.LENGTH_LONG).show();
             return;
         }
@@ -213,6 +209,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Otherwise, the update was successful and we can display a toast.
             Toast.makeText(this, getString(R.string.editor_update_book_successful),
                     Toast.LENGTH_SHORT).show();
+
         }
 
         // Show a toast message depending on whether or not the insertion was successful
@@ -224,6 +221,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Otherwise, the insertion was successful and we can display a toast.
             Toast.makeText(this, getString(R.string.editor_insert_book_successful),
                     Toast.LENGTH_SHORT).show();
+            // Exit activity
+            finish();
         }
     }
 
@@ -308,10 +307,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
-                saveBook();
-                // Exit activity
-                finish();
+                // If the book has changed, continue with navigating up to parent activity
+                // and save the book in the database
+                // which is the {@link MainActivity}.
+                if (mBookHasChanged) {
+                    saveBook();
+                }else{
+                    Toast.makeText(EditorActivity.this, R.string.enter_all_field, Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             // Respond to a click on the "Delete" menu option
@@ -447,11 +450,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private void makePhoneCall() {
         String phoneNumber = mSupplierPhoneEditText.getText().toString().trim();
-
-        if (ContextCompat.checkSelfPermission(EditorActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(EditorActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
-        } else {
-            startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber)));
-        }
+            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber)));
     }
 }

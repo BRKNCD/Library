@@ -48,7 +48,6 @@ public class BookCursorAdapter extends CursorAdapter{
     }
 
     private View.OnClickListener buyClickListener = new View.OnClickListener() {
-
         @Override
         public void onClick(View v) {
             View parentRow = (View) v.getParent();
